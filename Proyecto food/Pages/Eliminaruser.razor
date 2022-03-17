@@ -1,0 +1,128 @@
+﻿@page "/EliminarUSUARIO/{Id:int}"
+@using Data;
+@using System.Net.Http;
+@using System.Net.Http.Json;
+@inject HttpClient Http
+@inject IJSRuntime js
+@inject NavigationManager Navegacion;
+
+<h3>Eliminar Usuario</h3>
+
+<p>¿ Deseaas eliminar Este usuario?</p>
+<div>
+    <EditForm Model="Obuser">
+        <DataAnnotationsValidator />
+        <div class="container-fluid">
+            <div class="from-group row mb-1">
+                <label class="col-sm-3"> Nombre</label>
+                <div class="col-sm-9">
+                    <InputText class="form-control" @bind-Value="@Obuser.Nombre" readonly></InputText>
+                    <ValidationMessage For="(()=> Obuser.Nombre)" />
+                </div>
+            </div>
+            <div class="from-group row mb-1">
+                <label class="col-sm-3"> Apellidos </label>
+                <div class="col-sm-9">
+                    <InputText class="form-control" @bind-Value="@Obuser.Apellidos" readonly></InputText>
+                    <ValidationMessage For="(()=> Obuser.Apellidos)" />
+                </div>
+            </div>
+            <div class="from-group row mb-1">
+                <label class="col-sm-3"> Edad </label>
+                <div class="col-sm-9">
+                    <InputNumber class="form-control" @bind-Value="@Obuser.Edad" readonly></InputNumber>
+                    <ValidationMessage For="(()=> Obuser.Edad)" />
+                </div>
+            </div>
+            <div class="from-group row mb-1">
+                <label class="col-sm-3" Required> Telefono</label>
+                <div class="col-sm-9">
+                    <InputText class="form-control" @bind-Value="@Obuser.Telefono" readonly></InputText>
+                    <ValidationMessage For="(()=> Obuser.Telefono)" />
+
+                </div>
+            </div>
+            <div class="from-group row mb-1">
+                <label class="col-sm-3" Required> Genero</label>
+                <div class="col-sm-9">
+                    <InputSelect class="form-control" @bind-Value="@Obuser.Genero"readonly></InputSelect>
+                    <ValidationMessage For="(()=> Obuser.Genero)" />
+
+                </div>
+            </div>
+            <div class="from-group row mb-1">
+                <label class="col-sm-3" Required> Direccion</label>
+                <div class="col-sm-9">
+                    <InputText class="form-control" @bind-Value="@Obuser.Direccion" readonly></InputText>
+                    <ValidationMessage For="(()=> Obuser.Direccion)" />
+
+                </div>
+            </div>
+            <div class="from-group row mb-1">
+                <label class="col-sm-3"> Correo</label>
+                <div class="col-sm-9">
+                    <InputText class="form-control" @bind-Value="@Obuser.Correo" readonly></InputText>
+                    <ValidationMessage For="(()=> Obuser.Correo)" />
+
+                </div>
+            </div>
+
+            <div class="from-group row mb-1">
+                <label class="col-sm-3"> Password</label>
+                <div class="col-sm-9">
+                    <InputText class="form-control" @bind-Value="@Obuser.Password" readonly></InputText>
+                    <ValidationMessage For="(()=> Obuser.Password)" />
+
+                </div>
+            </div>
+        </div>
+
+        <button class="btn btn-danger" @onclick="Eliminar"> Eliminar </button>
+        <button class="btn btn-info" @onclick="Cancelar"> Cancelar </button>
+    </EditForm>
+
+
+</div>
+
+@code {
+    [Parameter]
+
+    public int id { get; set; }
+    User Obuser = new User();
+    public int Nombre { get; set; }
+    public string url = "/api/Usuario";
+    Respuesta<User> OResuser = new Respuesta<User>();
+    Respuesta<Object> respuesta = new Respuesta<Object>();
+
+    private void Cancelar() => Navegacion.NavigateTo("/usuario");
+
+    private async Task Eliminar()
+    {
+        var personaSeleccionada = Obuser;
+        string mensajeConfirmacion = $"¿Deseas eliminar a la persona{personaSeleccionada.Nombre} ?";
+        if (await js.InvokeAsync<bool>("confirm", mensajeConfirmacion))
+        {
+            var Response = await Http.DeleteAsync(url + "/" + id);
+            respuesta = Response.Content.ReadFromJsonAsync<Respuesta<Object>>().Result;
+            Navegacion.NavigateTo("/usuario");
+        }
+        else
+        {
+            Navegacion.NavigateTo("/usuario");
+        }
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        if (id != 0)
+        {
+
+
+            OResuser = await Http.GetFromJsonAsync<Respuesta<User>>(url + "/" + id);
+            Obuser = OResuser.Data;
+        }
+
+
+    }
+
+
+}

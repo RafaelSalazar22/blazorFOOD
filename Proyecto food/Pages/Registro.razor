@@ -1,0 +1,139 @@
+﻿@page "/registro"
+@using Data;
+@using System.Net.Http;
+@using System.Net.Http.Json;
+@inject HttpClient Http
+@inject NavigationManager Navegacion;
+
+
+
+
+<h3>Registro Cuenta</h3>
+<EditForm Model="Obuser">
+    <DataAnnotationsValidator />
+    <div class="container-fluid">
+        <div class="from-group row mb-1">
+            <label class="col-sm-3"> Nombre</label>
+            <div class="col-sm-9">
+                <InputText class="form-control" @bind-Value="@Obuser.Nombre"></InputText>
+                <ValidationMessage For="(()=> Obuser.Nombre)" />
+            </div>
+        </div>
+        <div class="from-group row mb-1">
+            <label class="col-sm-3"> Apellidos</label>
+            <div class="col-sm-9">
+                <InputText class="form-control" @bind-Value="@Obuser.Apellidos"></InputText>
+                <ValidationMessage For="(()=> Obuser.Apellidos)" />
+            </div>
+        </div>
+        <div class="from-group row mb-1">
+            <label class="col-sm-3"> Edad </label>
+            <div class="col-sm-9">
+                <InputNumber class="form-control" @bind-Value="@Obuser.Edad"></InputNumber>
+                <ValidationMessage For="(()=> Obuser.Edad)" />
+            </div>
+        </div>
+        <div class="from-group row mb-1">
+            <label class="col-sm-3" Required> Telefono</label>
+            <div class="col-sm-9">
+                <InputText class="form-control" @bind-Value="@Obuser.Telefono"></InputText>
+                <ValidationMessage For="(()=> Obuser.Telefono)" />
+
+            </div>
+        </div>
+        <div class="from-group row mb-1">
+            <label class="col-sm-3" Required> Genero</label>
+            <div class="col-sm-9">
+                <InputSelect class="form-control" @bind-Value="@Obuser.Genero"></InputSelect>
+                <InputSelect class="form-control" @bind-Value="@Obuser.Genero"></InputSelect>
+                <InputSelect class="form-control" @bind-Value="@Obuser.Genero"></InputSelect>
+                <InputSelect class="form-control" @bind-Value="@Obuser.Genero"></InputSelect>
+                <InputSelect class="form-control" @bind-Value="@Obuser.Genero"></InputSelect>
+
+                <ValidationMessage For="(()=> Obuser.Direccion)" />
+
+            </div>
+        </div>
+        <div class="from-group row mb-1">
+            <label class="col-sm-3" Required> Direccion</label>
+            <div class="col-sm-9">
+                <InputText class="form-control" @bind-Value="@Obuser.Direccion"></InputText>
+                <ValidationMessage For="(()=> Obuser.Direccion)" />
+
+            </div>
+        </div>
+        <div class="from-group row mb-1">
+            <label class="col-sm-3"> Correo</label>
+            <div class="col-sm-9">
+                <InputText class="form-control" @bind-Value="@Obuser.Correo"></InputText>
+                <ValidationMessage For="(()=> Obuser.Correo)" />
+
+            </div>
+        </div>
+
+        <div class="from-group row mb-1">
+            <label class="col-sm-3"> Password</label>
+            <div class="col-sm-9">
+                <InputText class="form-control" @bind-Value="@Obuser.Password"></InputText>
+                <ValidationMessage For="(()=> Obuser.Password)" />
+
+            </div>
+        </div>
+    </div>
+    <div>
+        <div class="from-group row mb-1">
+            <div class="col-sm-12">
+                <button class="btn btn-primary" @onclick="Guardar">Guardar</button>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+
+    [Parameter]
+    public int IdUser { get; set; }
+
+
+
+    User Obuser = new User();
+    Respuesta<User> OResuser = new Respuesta<User>();
+    Respuesta<Object> ORes = new Respuesta<Object>();
+    public string url = "/api/Usuario";
+    private async Task Guardar()
+    {
+        if (IdUser != 0)
+        {
+            var Response = await Http.PutAsJsonAsync<User>(url, Obuser);
+            ORes = Response.Content.ReadFromJsonAsync<Respuesta<Object>>().Result;
+            Navegacion.NavigateTo("/usuario");
+        }
+        else
+        {
+
+
+            if (Obuser.Nombre != null && Obuser.Apellidos != null && Obuser.Edad != null && Obuser.Genero != null && Obuser.Telefono != null && Obuser.Direccion != null && Obuser.Correo != null && Obuser.Password != null)
+            {
+                var Response = await Http.PostAsJsonAsync<User>(url, Obuser);
+                ORes = Response.Content.ReadFromJsonAsync<Respuesta<Object>>().Result;
+                Navegacion.NavigateTo("/usuario");
+            }
+        }
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (IdUser != 0)
+        {
+
+
+            OResuser = await Http.GetFromJsonAsync<Respuesta<User>>(url + "/" + IdUser);
+            Obuser = OResuser.Data;
+        }
+
+
+    }
+
+}
+

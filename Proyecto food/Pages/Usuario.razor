@@ -1,0 +1,58 @@
+﻿@page "/usuario"
+@using System.Net.Http;
+@using System.Net.Http.Json;
+@using Proyecto_Food_Blazor.Data;
+@inject HttpClient http;
+@inject NavigationManager Navegacion;
+
+<h3>Lista de Usuarios</h3>
+<div class="row">
+    <div class="col-12 text-right">
+        <a href="/nueUsuer"><button type="submit" value="Create" class="btn btn-success">Crear un Usuario nuevo</button> </a>
+    </div>
+
+</div>
+<table class=" table">
+    <tr>
+        <td> Id</td>
+        <td> Nombre</td>
+        <td> Apellidos </td>
+        <td> Edad</td>
+        <td> Genero</td>
+        <td> Telefono</td>
+        <td> Direccion</td>
+        <td> Correo</td>
+        <td> Password</td>
+    </tr>
+
+    @if (ORespuesta != null && ORespuesta.Data != null)
+    {
+        @foreach (var oElemento in (List<User>)ORespuesta.Data)
+        {
+<tr>
+    <td> @oElemento.IdUser</td>
+    <td> @oElemento.Nombre</td>
+    <td> @oElemento.Apellidos</td>
+    <td> @oElemento.Edad</td>
+    <td> @oElemento.Genero</td>
+    <td> @oElemento.Telefono</td>
+    <td> @oElemento.Direccion</td>
+    <td> @oElemento.Correo</td>
+    <td> @oElemento.Password</td>
+    <td>
+        <a href="/nueUsuer/@oElemento.IdUser"><button type="submit" class="btn btn-warning">Editar</button> </a>
+        <a href="/EliminarUSUARIO/@oElemento.IdUser"><button type="submit" class="btn btn-danger">Eliminar</button></a>
+
+    </td>
+</tr>
+        }
+    }
+</table>
+@code {
+    public string url = "/api/Usuario";
+    public Data.Respuesta<List<User>> ORespuesta = new Data.Respuesta<List<User>>();
+    protected override async Task OnInitializedAsync() =>
+    ORespuesta = await http.GetFromJsonAsync<Respuesta<List<User>>>(url);
+
+
+}

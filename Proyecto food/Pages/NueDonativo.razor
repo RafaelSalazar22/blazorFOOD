@@ -1,0 +1,115 @@
+﻿@page "/nuedonativo"
+@using Data;
+@using System.Net.Http;
+@using System.Net.Http.Json;
+@inject HttpClient Http
+@inject NavigationManager Navegacion;
+@inject IJSRuntime js
+<br />
+
+<EditForm Model="ObDonar">
+    <DataAnnotationsValidator />
+    <h3 class="text-center">Agregar</h3>
+    <div class="container-fluid">
+        
+            <div class="from-group row mb-1">
+                <label class="col-sm-3">Arroz</label>
+                <div class="">
+                    <InputCheckbox @bind-Value=@ObDonar.Arroz />
+                </div>
+            </div>
+            <div class="from-group row mb-1">
+                <label class="col-sm-3">Frijol</label>
+                <div class="checkbox-JASoft">
+                    <InputCheckbox @bind-Value=@ObDonar.Frijol />
+                </div>
+            </div>
+            <div class="from-group row mb-1">
+                <label class="col-sm-3">Atun</label>
+                <div>
+                    <InputCheckbox @bind-Value=@ObDonar.Atun />
+                </div>
+            </div>
+            <div class="from-group row mb-1">
+                <label class="col-sm-3">  GranosElote</label>
+                <div>
+                    <InputCheckbox @bind-Value=@ObDonar.GranosElote />
+                </div>
+            </div>
+            <div class="from-group row mb-1">
+                <label class="col-sm-3"> Champiniones</label>
+                <div>
+                    <InputCheckbox @bind-Value=@ObDonar.Champiniones />
+
+                </div>
+            </div>
+            <div class="from-group row mb-1">
+                <label class="col-sm-3"> SopaEnlatada</label>
+                <div>
+                    <InputCheckbox @bind-Value=@ObDonar.SopaEnlatada />
+
+                </div>
+            </div>
+            <div class="from-group row mb-1">
+                <label class="col-sm-3"> LechePolvo</label>
+                <div>
+                    <InputCheckbox @bind-Value=@ObDonar.LechePolvo />
+                </div>
+            </div>
+            <div class="from-group row mb-1">
+                <label class="col-sm-3"> Sardina</label>
+                <div>
+                    <InputCheckbox @bind-Value=@ObDonar.Sardina />
+
+                </div>
+            </div>
+            <div class="from-group row mb-1">
+                <label class="col-sm-3"> otro</label>
+                <div>
+                    <InputCheckbox @bind-Value=otrotf />
+                    @if (otrotf == true)
+                    {
+                        <InputText class="half left cf" @bind-Value="ObDonar.otro"> </InputText>
+                    }
+                </div>
+            </div>
+            <div class="from-group row mb-1">
+                <label class="col-sm-3"> Fecha del acuerdo</label>
+                <div class="col-sm-9">
+                    <InputDate class="form-control" @bind-Value="@ObDonar.FechaAcuerdo"></InputDate>
+                    <ValidationMessage For="(()=> ObDonar.FechaAcuerdo)" />
+
+                </div>
+            </div>
+        </div>
+        <div class="from-group row mb-1">
+            <div class="col-sm-12">
+                <button class="btn btn-primary" @onclick="Guardar">Guardar</button>
+                <br>
+                <br>
+            </div>
+        </div>
+    
+          
+        
+</EditForm>
+
+@code {
+    Donar ObDonar = new Donar();
+    public bool otrotf { get; set; }
+
+    Respuesta<Object> ORes = new Respuesta<Object>();
+    public string url = "/api/Donativo";
+    private async Task Guardar()
+    {
+        if(ObDonar.FechaAcuerdo !=null)
+        {
+            var Response = await Http.PostAsJsonAsync<Donar>(url, ObDonar);
+            ORes = Response.Content.ReadFromJsonAsync<Respuesta<Object>>().Result;
+            Navegacion.NavigateTo("/");
+        }
+        
+
+
+    }
+}
